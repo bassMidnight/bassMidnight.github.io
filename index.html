@@ -1,292 +1,391 @@
 <!DOCTYPE html>
 <html lang="th">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>คำนวณราคาและกำไร</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>คำนวณราคาและกำไร</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
 
-<!-- html2canvas -->
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <!-- html2canvas -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
-<style>
-body {
-    font-family: "Noto Sans Thai", system-ui, -apple-system,
-                 BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #f4f6f8;
-    padding: 40px;
-    display: flex;
-    gap: 30px;
-    flex-wrap: wrap;
-    justify-content: center;
-}
+    <style>
+      body {
+        font-family: "Noto Sans Thai", system-ui, -apple-system,
+          BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #f4f6f8;
+        padding: 40px;
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
 
-/* ===== Time Bar ===== */
-.time-bar {
-    width: 100%;
-    max-width: 900px;
-    background: #ffffff;
-    padding: 12px 20px;
-    border-radius: 12px;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-    text-align: center;
-    font-size: 16px;
-    margin-bottom: 10px;
-}
-
-/* ===== Card ===== */
-.card {
-    background: #fff;
-    width: 420px;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-}
-
-h1 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.item {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    gap: 10px;
-    align-items: center;
-}
-
-.sub {
-    grid-column: 1 / -1;
-    font-size: 13px;
-    color: #555;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-.price {
-    font-size: 14px;
-    color: #777;
-}
-
-input[type="number"] {
-    width: 60px;
-    padding: 6px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    text-align: center;
-}
-
-.total {
-    margin-top: 20px;
-    font-size: 18px;
-    font-weight: bold;
-    text-align: center;
-}
-
-.profit {
-    color: #2e7d32;
-}
-
-/* ===== Export Button ===== */
-.export-btn {
-    width: 100%;
-    margin-top: 15px;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    background: #1976d2;
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.export-btn:hover {
-    background: #125ca1;
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 600px) {
-    body {
-        padding: 15px;
-    }
-    .card {
+      /* ===== Time Bar ===== */
+      .time-bar {
         width: 100%;
-    }
-    .item {
-        grid-template-columns: 1fr auto;
-        grid-template-rows: auto auto;
-    }
-    input[type="number"] {
-        grid-column: 1 / -1;
-        width: 100%;
+        max-width: 900px;
+        background: #ffffff;
+        padding: 12px 20px;
+        border-radius: 12px;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        text-align: center;
         font-size: 16px;
-        padding: 10px;
-    }
-    .sub {
-        flex-direction: column;
-        gap: 4px;
-    }
-    .time-bar {
+        margin-bottom: 10px;
+      }
+
+      /* ===== Card ===== */
+      .card {
+        background: #fff;
+        width: 420px;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .item {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .sub {
+        grid-column: 1 / -1;
+        font-size: 13px;
+        color: #555;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      .price {
         font-size: 14px;
-    }
-}
-</style>
-</head>
+        color: #777;
+      }
 
-<body>
+      input[type="number"] {
+        width: 60px;
+        height: 20px;
+        padding: 6px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        text-align: center;
+      }
 
-<!-- ===== EXPORT AREA ===== -->
-<div id="exportArea" style="display:flex; flex-direction:column; gap:20px; align-items:center; width:100%;">
+      .total {
+        margin-top: 20px;
+        font-size: 18px;
+        font-weight: bold;
+        text-align: center;
+      }
 
-<!-- ===== TIME BAR ===== -->
-<div class="time-bar" id="timeBar">กำลังโหลดเวลา...</div>
+      .profit {
+        color: #2e7d32;
+      }
 
-<!-- ===== CONTENT ===== -->
-<div style="display:flex; gap:30px; flex-wrap:wrap; justify-content:center;">
+      /* ===== Export Button ===== */
+      .export-btn {
+        width: 100%;
+        margin-top: 15px;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        background: #1976d2;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+      }
 
-<!-- ================= CARD 1 ================= -->
-<div class="card">
-<h1>คำนวณราคาของ</h1>
+      .export-btn:hover {
+        background: #125ca1;
+      }
 
-<div class="item"><span>ชีสบอล</span><span class="price">94</span><input type="number" id="s1" value="0"></div>
-<div class="item"><span>ชีสสติก</span><span class="price">94</span><input type="number" id="s2" value="0"></div>
-<div class="item"><span>คอนชีส</span><span class="price">57</span><input type="number" id="s3" value="0"></div>
-<div class="item"><span>โดนัทกุ้ง</span><span class="price">73</span><input type="number" id="s4" value="0"></div>
-<div class="item"><span>นักเก็ต</span><span class="price">100</span><input type="number" id="s5" value="0"></div>
-<div class="item"><span>เฟรนฟราย</span><span class="price">54</span><input type="number" id="s6" value="0"></div>
-<div class="item"><span>ไก่ป๊อป</span><span class="price">116</span><input type="number" id="s7" value="0"></div>
+      /* ===== Responsive ===== */
+      @media (max-width: 600px) {
+        body {
+          padding: 15px;
+        }
+        .card {
+          width: 100%;
+        }
+        .item {
+          grid-template-columns: 1fr auto;
+          grid-template-rows: auto auto;
+        }
+        input[type="number"] {
+          grid-column: 1 / -1;
+          width: 100%;
+          font-size: 16px;
+          padding: 10px;
+        }
+        .sub {
+          flex-direction: column;
+          gap: 4px;
+        }
+        .time-bar {
+          font-size: 14px;
+        }
+      }
+    </style>
+  </head>
 
-<div class="total" id="costTotal">ราคารวม: 0 บาท</div>
-</div>
+  <body>
+    <!-- ===== EXPORT AREA ===== -->
+    <div
+      style="
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+        width: 100%;
+      "
+    >
+      <!-- ===== TIME BAR ===== -->
+      <div class="time-bar" id="timeBar">กำลังโหลดเวลา...</div>
 
-<!-- ================= CARD 2 ================= -->
-<div class="card">
-<h1>คำนวณกำไร</h1>
+      <!-- ===== CONTENT ===== -->
+      <div
+        style="
+          display: flex;
+          gap: 30px;
+          flex-wrap: wrap;
+          justify-content: center;
+        "
+      >
+        <!-- ================= CARD 1 ================= -->
+        <div class="card">
+          <h1>คำนวณราคาของ</h1>
 
-<div class="item"><span>ชีสบอล</span><span class="price">10 / 3.65</span><input type="number" id="p1" value="0"></div>
-<div class="sub"><span id="sale1">ขาย: 0</span><span id="profit1">กำไร: 0</span></div>
+          <div class="item">
+            <span>ชีสบอล</span><span class="price">94</span
+            ><input type="number" id="s1" value="0" />
+          </div>
+          <div class="item">
+            <span>ชีสสติก</span><span class="price">94</span
+            ><input type="number" id="s2" value="0" />
+          </div>
+          <div class="item">
+            <span>คอนชีส</span><span class="price">57</span
+            ><input type="number" id="s3" value="0" />
+          </div>
+          <div class="item">
+            <span>โดนัทกุ้ง</span><span class="price">73</span
+            ><input type="number" id="s4" value="0" />
+          </div>
+          <div class="item">
+            <span>นักเก็ต</span><span class="price">100</span
+            ><input type="number" id="s5" value="0" />
+          </div>
+          <div class="item">
+            <span>เฟรนฟราย</span><span class="price">54</span
+            ><input type="number" id="s6" value="0" />
+          </div>
+          <div class="item">
+            <span>ไก่ป๊อป</span><span class="price">116</span
+            ><input type="number" id="s7" value="0" />
+          </div>
 
-<div class="item"><span>ชีสสติก</span><span class="price">10 / 6.27</span><input type="number" id="p2" value="0"></div>
-<div class="sub"><span id="sale2">ขาย: 0</span><span id="profit2">กำไร: 0</span></div>
+          <div class="total" id="costTotal">ราคารวม: 0 บาท</div>
+        </div>
 
-<div class="item"><span>คอนชีส</span><span class="price">15 / 7.2</span><input type="number" id="p3" value="0"></div>
-<div class="sub"><span id="sale3">ขาย: 0</span><span id="profit3">กำไร: 0</span></div>
+        <!-- ================= CARD 2 ================= -->
+        <div id="exportArea" class="card">
+          <h1>คำนวณกำไร</h1>
 
-<div class="item"><span>โดนัทกุ้ง</span><span class="price">15 / 6.1</span><input type="number" id="p4" value="0"></div>
-<div class="sub"><span id="sale4">ขาย: 0</span><span id="profit4">กำไร: 0</span></div>
+          <div class="item">
+            <span>ชีสบอล</span><span class="price">10 / 3.65</span
+            ><input type="number" id="p1" value="0" />
+          </div>
+          <div class="sub">
+            <span id="sale1">ขาย: 0</span><span id="profit1">กำไร: 0</span>
+          </div>
 
-<div class="item"><span>นักเก็ต</span><span class="price">49 / 14</span><input type="number" id="p5" value="0"></div>
-<div class="sub"><span id="sale5">ขาย: 0</span><span id="profit5">กำไร: 0</span></div>
+          <div class="item">
+            <span>ชีสสติก</span><span class="price">10 / 6.27</span
+            ><input type="number" id="p2" value="0" />
+          </div>
+          <div class="sub">
+            <span id="sale2">ขาย: 0</span><span id="profit2">กำไร: 0</span>
+          </div>
 
-<div class="item"><span>เฟรนฟราย</span><span class="price">49 / 10</span><input type="number" id="p6" value="0"></div>
-<div class="sub"><span id="sale6">ขาย: 0</span><span id="profit6">กำไร: 0</span></div>
+          <div class="item">
+            <span>คอนชีส</span><span class="price">15 / 7.2</span
+            ><input type="number" id="p3" value="0" />
+          </div>
+          <div class="sub">
+            <span id="sale3">ขาย: 0</span><span id="profit3">กำไร: 0</span>
+          </div>
 
-<div class="item"><span>ไก่ป๊อป</span><span class="price">49 / 23.2</span><input type="number" id="p7" value="0"></div>
-<div class="sub"><span id="sale7">ขาย: 0</span><span id="profit7">กำไร: 0</span></div>
+          <div class="item">
+            <span>โดนัทกุ้ง</span><span class="price">15 / 6.1</span
+            ><input type="number" id="p4" value="0" />
+          </div>
+          <div class="sub">
+            <span id="sale4">ขาย: 0</span><span id="profit4">กำไร: 0</span>
+          </div>
 
-<div class="total" id="saleTotal">ยอดขายรวม: 0 บาท</div>
-<div class="total profit" id="profitTotal">กำไรรวม: 0 บาท</div>
-</div>
+          <div class="item">
+            <span>นักเก็ต</span><span class="price">49 / 14</span
+            ><input type="number" id="p5" value="0" />
+          </div>
+          <div class="sub">
+            <span id="sale5">ขาย: 0</span><span id="profit5">กำไร: 0</span>
+          </div>
 
-</div>
-</div>
+          <div class="item">
+            <span>เฟรนฟราย</span><span class="price">49 / 10</span
+            ><input type="number" id="p6" value="0" />
+          </div>
+          <div class="sub">
+            <span id="sale6">ขาย: 0</span><span id="profit6">กำไร: 0</span>
+          </div>
 
-<!-- ===== Export Button ===== -->
-<div style="width:420px; max-width:100%;">
-<button class="export-btn" onclick="exportImage()">📸 Export Image</button>
-</div>
+          <div class="item">
+            <span>ไก่ป๊อป</span><span class="price">49 / 23.2</span
+            ><input type="number" id="p7" value="0" />
+          </div>
+          <div class="sub">
+            <span id="sale7">ขาย: 0</span><span id="profit7">กำไร: 0</span>
+          </div>
 
-<script>
-const salePrices = [94, 94, 57, 73, 100, 54, 116];
+          <div class="total" id="saleTotal">ยอดขายรวม: 0 บาท</div>
+          <div class="total profit" id="profitTotal">กำไรรวม: 0 บาท</div>
 
-const profitData = [
-    { sell: 10, cost: 3.65 },
-    { sell: 10, cost: 6.27 },
-    { sell: 15, cost: 7.2 },
-    { sell: 15, cost: 6.1 },
-    { sell: 49, cost: 14 },
-    { sell: 49, cost: 10 },
-    { sell: 49, cost: 23.2 },
-];
+          <!-- ===== Export Button ===== -->
+          <div style="width: 420px; max-width: 100%">
+            <button class="export-btn" onclick="exportImage()">
+              📸 Export Image
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-// ===== TIME =====
-function updateTime() {
-    const now = new Date();
-    const days = ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์"];
-    const months = [
-        "มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน",
-        "กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"
-    ];
+    <script>
+      const salePrices = [94, 94, 57, 73, 100, 54, 116];
 
-    const day = days[now.getDay()];
-    const date = now.getDate();
-    const month = months[now.getMonth()];
-    const year = now.getFullYear() + 543;
+      const profitData = [
+        { sell: 10, cost: 3.65 },
+        { sell: 10, cost: 6.27 },
+        { sell: 15, cost: 7.2 },
+        { sell: 15, cost: 6.1 },
+        { sell: 49, cost: 14 },
+        { sell: 49, cost: 10 },
+        { sell: 49, cost: 23.2 },
+      ];
 
-    const time = now.toLocaleTimeString("th-TH");
+      // ===== TIME =====
+      function updateTime() {
+        const now = new Date();
+        const days = [
+          "อาทิตย์",
+          "จันทร์",
+          "อังคาร",
+          "พุธ",
+          "พฤหัสบดี",
+          "ศุกร์",
+          "เสาร์",
+        ];
+        const months = [
+          "มกราคม",
+          "กุมภาพันธ์",
+          "มีนาคม",
+          "เมษายน",
+          "พฤษภาคม",
+          "มิถุนายน",
+          "กรกฎาคม",
+          "สิงหาคม",
+          "กันยายน",
+          "ตุลาคม",
+          "พฤศจิกายน",
+          "ธันวาคม",
+        ];
 
-    document.getElementById("timeBar").innerText =
-        `📅 วัน${day} ${date} ${month} ${year}   ⏰ ${time}`;
-}
-setInterval(updateTime, 1000);
-updateTime();
+        const day = days[now.getDay()];
+        const date = now.getDate();
+        const month = months[now.getMonth()];
+        const year = now.getFullYear() + 543;
 
-// ===== FUNCTIONS =====
-function cleanZero(input) {
-    input.value = input.value === "" ? "0" : parseInt(input.value, 10);
-}
+        const time = now.toLocaleTimeString("th-TH");
 
-function calculateSale() {
-    let total = 0;
-    salePrices.forEach((price, i) => {
-        total += (Number(document.getElementById(`s${i+1}`).value) || 0) * price;
-    });
-    document.getElementById("costTotal").innerText =
-        `ราคารวม: ${total.toLocaleString()} บาท`;
-}
+        document.getElementById(
+          "timeBar"
+        ).innerText = `📅 วัน${day} ${date} ${month} ${year}   ⏰ ${time}`;
+      }
+      setInterval(updateTime, 1000);
+      updateTime();
 
-function calculateProfit() {
-    let saleTotal = 0;
-    let profitTotal = 0;
+      // ===== FUNCTIONS =====
+      function cleanZero(input) {
+        input.value = input.value === "" ? "0" : parseInt(input.value, 10);
+      }
 
-    profitData.forEach((item, i) => {
-        const qty = Number(document.getElementById(`p${i+1}`).value) || 0;
-        const sale = qty * item.sell;
-        const profit = qty * item.cost;
+      function calculateSale() {
+        let total = 0;
+        salePrices.forEach((price, i) => {
+          total +=
+            (Number(document.getElementById(`s${i + 1}`).value) || 0) * price;
+        });
+        document.getElementById(
+          "costTotal"
+        ).innerText = `ราคารวม: ${total.toLocaleString()} บาท`;
+      }
 
-        document.getElementById(`sale${i+1}`).innerText = `ขาย: ${sale.toFixed(2)}`;
-        document.getElementById(`profit${i+1}`).innerText = `กำไร: ${profit.toFixed(2)}`;
+      function calculateProfit() {
+        let saleTotal = 0;
+        let profitTotal = 0;
 
-        saleTotal += sale;
-        profitTotal += profit;
-    });
+        profitData.forEach((item, i) => {
+          const qty = Number(document.getElementById(`p${i + 1}`).value) || 0;
+          const sale = qty * item.sell;
+          const profit = qty * item.cost;
 
-    document.getElementById("saleTotal").innerText =
-        `ยอดขายรวม: ${saleTotal.toFixed(2)} บาท`;
-    document.getElementById("profitTotal").innerText =
-        `กำไรรวม: ${profitTotal.toFixed(2)} บาท`;
-}
+          document.getElementById(
+            `sale${i + 1}`
+          ).innerText = `ขาย: ${sale.toFixed(2)}`;
+          document.getElementById(
+            `profit${i + 1}`
+          ).innerText = `กำไร: ${profit.toFixed(2)}`;
 
-function exportImage() {
-    html2canvas(document.getElementById("exportArea")).then(canvas => {
-        const link = document.createElement("a");
-        link.download = "summary.png";
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-    });
-}
+          saleTotal += sale;
+          profitTotal += profit;
+        });
 
-// ===== EVENTS =====
-document.querySelectorAll('input[type="number"]').forEach(input => {
-    input.addEventListener("input", function () {
-        cleanZero(this);
-        calculateSale();
-        calculateProfit();
-    });
-});
-</script>
+        document.getElementById(
+          "saleTotal"
+        ).innerText = `ยอดขายรวม: ${saleTotal.toFixed(2)} บาท`;
+        document.getElementById(
+          "profitTotal"
+        ).innerText = `กำไรรวม: ${profitTotal.toFixed(2)} บาท`;
+      }
 
-</body>
+      function exportImage() {
+        html2canvas(document.getElementById("exportArea")).then((canvas) => {
+          const link = document.createElement("a");
+          link.download = "summary.png";
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+        });
+      }
+
+      // ===== EVENTS =====
+      document.querySelectorAll('input[type="number"]').forEach((input) => {
+        input.addEventListener("input", function () {
+          cleanZero(this);
+          calculateSale();
+          calculateProfit();
+        });
+      });
+    </script>
+  </body>
 </html>
