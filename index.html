@@ -7,6 +7,9 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
 
+<!-- html2canvas -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
 <style>
 body {
     font-family: "Noto Sans Thai", system-ui, -apple-system,
@@ -19,6 +22,20 @@ body {
     justify-content: center;
 }
 
+/* ===== Time Bar ===== */
+.time-bar {
+    width: 100%;
+    max-width: 900px;
+    background: #ffffff;
+    padding: 12px 20px;
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    text-align: center;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+/* ===== Card ===== */
 .card {
     background: #fff;
     width: 420px;
@@ -72,6 +89,23 @@ input[type="number"] {
     color: #2e7d32;
 }
 
+/* ===== Export Button ===== */
+.export-btn {
+    width: 100%;
+    margin-top: 15px;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #1976d2;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.export-btn:hover {
+    background: #125ca1;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 600px) {
     body {
@@ -94,11 +128,23 @@ input[type="number"] {
         flex-direction: column;
         gap: 4px;
     }
+    .time-bar {
+        font-size: 14px;
+    }
 }
 </style>
 </head>
 
 <body>
+
+<!-- ===== EXPORT AREA ===== -->
+<div id="exportArea" style="display:flex; flex-direction:column; gap:20px; align-items:center; width:100%;">
+
+<!-- ===== TIME BAR ===== -->
+<div class="time-bar" id="timeBar">กำลังโหลดเวลา...</div>
+
+<!-- ===== CONTENT ===== -->
+<div style="display:flex; gap:30px; flex-wrap:wrap; justify-content:center;">
 
 <!-- ================= CARD 1 ================= -->
 <div class="card">
@@ -140,6 +186,14 @@ input[type="number"] {
 <div class="total profit" id="profitTotal">กำไรรวม: 0 บาท</div>
 </div>
 
+</div>
+</div>
+
+<!-- ===== Export Button ===== -->
+<div style="width:420px; max-width:100%;">
+<button class="export-btn" onclick="exportImage()">📸 Export Image</button>
+</div>
+
 <script>
 const salePrices = [94, 94, 57, 73, 100, 54];
 
@@ -152,6 +206,29 @@ const profitData = [
     { sell: 49, cost: 10 },
 ];
 
+// ===== TIME =====
+function updateTime() {
+    const now = new Date();
+    const days = ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์"];
+    const months = [
+        "มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน",
+        "กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"
+    ];
+
+    const day = days[now.getDay()];
+    const date = now.getDate();
+    const month = months[now.getMonth()];
+    const year = now.getFullYear() + 543;
+
+    const time = now.toLocaleTimeString("th-TH");
+
+    document.getElementById("timeBar").innerText =
+        `📅 วัน${day} ${date} ${month} ${year}   ⏰ ${time}`;
+}
+setInterval(updateTime, 1000);
+updateTime();
+
+// ===== FUNCTIONS =====
 function cleanZero(input) {
     input.value = input.value === "" ? "0" : parseInt(input.value, 10);
 }
@@ -187,6 +264,16 @@ function calculateProfit() {
         `กำไรรวม: ${profitTotal.toFixed(2)} บาท`;
 }
 
+function exportImage() {
+    html2canvas(document.getElementById("exportArea")).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "summary.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+    });
+}
+
+// ===== EVENTS =====
 document.querySelectorAll('input[type="number"]').forEach(input => {
     input.addEventListener("input", function () {
         cleanZero(this);
