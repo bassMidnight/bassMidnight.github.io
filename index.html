@@ -156,6 +156,7 @@ input[type="number"] {
 <div class="item"><span>โดนัทกุ้ง</span><span class="price">73</span><input type="number" id="s4" value="0"></div>
 <div class="item"><span>นักเก็ต</span><span class="price">100</span><input type="number" id="s5" value="0"></div>
 <div class="item"><span>เฟรนฟราย</span><span class="price">54</span><input type="number" id="s6" value="0"></div>
+<div class="item"><span>ไก่ป๊อป</span><span class="price">116</span><input type="number" id="s7" value="0"></div>
 
 <div class="total" id="costTotal">ราคารวม: 0 บาท</div>
 </div>
@@ -167,7 +168,7 @@ input[type="number"] {
 <div class="item"><span>ชีสบอล</span><span class="price">10 / 3.65</span><input type="number" id="p1" value="0"></div>
 <div class="sub"><span id="sale1">ขาย: 0</span><span id="profit1">กำไร: 0</span></div>
 
-<div class="item"><span>ชีสสติก</span><span class="price">15 / 6.27</span><input type="number" id="p2" value="0"></div>
+<div class="item"><span>ชีสสติก</span><span class="price">10 / 6.27</span><input type="number" id="p2" value="0"></div>
 <div class="sub"><span id="sale2">ขาย: 0</span><span id="profit2">กำไร: 0</span></div>
 
 <div class="item"><span>คอนชีส</span><span class="price">15 / 7.2</span><input type="number" id="p3" value="0"></div>
@@ -182,6 +183,9 @@ input[type="number"] {
 <div class="item"><span>เฟรนฟราย</span><span class="price">49 / 10</span><input type="number" id="p6" value="0"></div>
 <div class="sub"><span id="sale6">ขาย: 0</span><span id="profit6">กำไร: 0</span></div>
 
+<div class="item"><span>ไก่ป๊อป</span><span class="price">49 / 23.2</span><input type="number" id="p7" value="0"></div>
+<div class="sub"><span id="sale7">ขาย: 0</span><span id="profit7">กำไร: 0</span></div>
+
 <div class="total" id="saleTotal">ยอดขายรวม: 0 บาท</div>
 <div class="total profit" id="profitTotal">กำไรรวม: 0 บาท</div>
 </div>
@@ -195,15 +199,16 @@ input[type="number"] {
 </div>
 
 <script>
-const salePrices = [94, 94, 57, 73, 100, 54];
+const salePrices = [94, 94, 57, 73, 100, 54, 116];
 
 const profitData = [
     { sell: 10, cost: 3.65 },
-    { sell: 15, cost: 6.27 },
+    { sell: 10, cost: 6.27 },
     { sell: 15, cost: 7.2 },
     { sell: 15, cost: 6.1 },
     { sell: 49, cost: 14 },
     { sell: 49, cost: 10 },
+    { sell: 49, cost: 23.2 },
 ];
 
 // ===== TIME =====
@@ -249,7 +254,7 @@ function calculateProfit() {
     profitData.forEach((item, i) => {
         const qty = Number(document.getElementById(`p${i+1}`).value) || 0;
         const sale = qty * item.sell;
-        const profit = sale - (qty * item.cost);
+        const profit = qty * item.cost;
 
         document.getElementById(`sale${i+1}`).innerText = `ขาย: ${sale.toFixed(2)}`;
         document.getElementById(`profit${i+1}`).innerText = `กำไร: ${profit.toFixed(2)}`;
