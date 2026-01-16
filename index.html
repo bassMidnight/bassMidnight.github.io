@@ -258,8 +258,15 @@
             <span id="sale7">ขาย: 0</span><span id="profit7">กำไร: 0</span>
           </div>
 
+          <div class="item">
+            <span>ค่าใช้จ่าย</span><span class="price">-</span
+            ><input type="number" id="expenses" value="0" />
+          </div>
+
           <div class="total" id="saleTotal">ยอดขายรวม: 0 บาท</div>
+          <div class="total" id="saleTotalWithExpenses">ยอดขายหักค่าใช้จ่าย: 0 บาท</div>
           <div class="total profit" id="profitTotal">กำไรรวม: 0 บาท</div>
+          <div class="total profit" id="profitTotalWithExpenses">กำไรหักค่าใช้จ่าย: 0 บาท</div>
 
           <!-- ===== Export Button ===== -->
           <div style="width: 420px; max-width: 100%">
@@ -344,6 +351,11 @@
       function calculateProfit() {
         let saleTotal = 0;
         let profitTotal = 0;
+        let expenses =
+          Number(document.getElementById("expenses").value) || 0;
+
+        let saleTotalWithExpenses = 0;
+        let profitTotalWithExpenses = 0;
 
         profitData.forEach((item, i) => {
           const qty = Number(document.getElementById(`p${i + 1}`).value) || 0;
@@ -360,13 +372,22 @@
           saleTotal += sale;
           profitTotal += profit;
         });
+        
+        saleTotalWithExpenses = saleTotal - expenses;
+        profitTotalWithExpenses = profitTotal - expenses;
 
         document.getElementById(
           "saleTotal"
         ).innerText = `ยอดขายรวม: ${saleTotal.toFixed(2)} บาท`;
         document.getElementById(
+          "saleTotalWithExpenses"
+        ).innerText = `ยอดขายหักค่าใช้จ่าย: ${saleTotalWithExpenses.toFixed(2)} บาท`;
+        document.getElementById(
           "profitTotal"
         ).innerText = `กำไรรวม: ${profitTotal.toFixed(2)} บาท`;
+        document.getElementById(
+          "profitTotalWithExpenses"
+        ).innerText = `กำไรหักค่าใช้จ่าย: ${profitTotalWithExpenses.toFixed(2)} บาท`;
       }
 
       function exportImage() {
