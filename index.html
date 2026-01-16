@@ -2,7 +2,9 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>คำนวณราคาและกำไร</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
@@ -17,6 +19,7 @@ body {
     justify-content: center;
 }
 
+/* ===== Card ===== */
 .card {
     background: #fff;
     width: 420px;
@@ -30,6 +33,7 @@ h1 {
     margin-bottom: 20px;
 }
 
+/* ===== Item ===== */
 .item {
     display: grid;
     grid-template-columns: 1fr auto auto;
@@ -51,6 +55,7 @@ input[type="number"] {
     text-align: center;
 }
 
+/* ===== Total ===== */
 .total {
     margin-top: 20px;
     font-size: 18px;
@@ -60,6 +65,47 @@ input[type="number"] {
 
 .profit {
     color: #2e7d32;
+}
+
+/* ===================== */
+/* ===== Responsive ===== */
+/* ===================== */
+@media (max-width: 600px) {
+
+    body {
+        padding: 15px;
+        gap: 20px;
+    }
+
+    .card {
+        width: 100%;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    .item {
+        grid-template-columns: 1fr auto;
+        grid-template-rows: auto auto;
+        gap: 6px;
+    }
+
+    .item input[type="number"] {
+        grid-column: 1 / -1;
+        width: 100%;
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    .price {
+        font-size: 13px;
+    }
+
+    .total {
+        font-size: 16px;
+    }
 }
 </style>
 </head>
@@ -71,10 +117,10 @@ input[type="number"] {
 <h1>คำนวณราคาของ</h1>
 
 <div class="item"><span>ชีสสติก</span><span class="price">94</span><input type="number" id="s1" value="0"></div>
-<div class="item"><span>คอนชีส</span><span class="price">57</span><input type="number" id="s3" value="0"></div>
-<div class="item"><span>โดนัทกุ้ง</span><span class="price">73</span><input type="number" id="s4" value="0"></div>
-<div class="item"><span>นักเก็ต</span><span class="price">100</span><input type="number" id="s5" value="0"></div>
-<div class="item"><span>เฟรนฟราย</span><span class="price">54</span><input type="number" id="s6" value="0"></div>
+<div class="item"><span>คอนชีส</span><span class="price">57</span><input type="number" id="s2" value="0"></div>
+<div class="item"><span>โดนัทกุ้ง</span><span class="price">73</span><input type="number" id="s3" value="0"></div>
+<div class="item"><span>นักเก็ต</span><span class="price">100</span><input type="number" id="s4" value="0"></div>
+<div class="item"><span>เฟรนฟราย</span><span class="price">54</span><input type="number" id="s5" value="0"></div>
 
 <div class="total" id="costTotal">ราคารวม: 0 บาท</div>
 </div>
@@ -84,12 +130,12 @@ input[type="number"] {
 <h1>คำนวณกำไร</h1>
 
 <div class="item"><span>ชีสสติก</span><span class="price">15 / 6.27</span><input type="number" id="p1" value="0"></div>
-<div class="item"><span>คอนชีส</span><span class="price">8 / 7.2</span><input type="number" id="p3" value="0"></div>
-<div class="item"><span>โดนัทกุ้ง</span><span class="price">12 / 6.1</span><input type="number" id="p4" value="0"></div>
-<div class="item"><span>นักเก็ต</span><span class="price">14 / 49</span><input type="number" id="p5" value="0"></div>
-<div class="item"><span>เฟรนฟราย</span><span class="price">10 / 49</span><input type="number" id="p6" value="0"></div>
+<div class="item"><span>คอนชีส</span><span class="price">8 / 7.2</span><input type="number" id="p2" value="0"></div>
+<div class="item"><span>โดนัทกุ้ง</span><span class="price">12 / 6.1</span><input type="number" id="p3" value="0"></div>
+<div class="item"><span>นักเก็ต</span><span class="price">14 / 49</span><input type="number" id="p4" value="0"></div>
+<div class="item"><span>เฟรนฟราย</span><span class="price">10 / 49</span><input type="number" id="p5" value="0"></div>
 
-<div class="total sale" id="saleTotal">ยอดขายรวม: 0 บาท</div>
+<div class="total" id="saleTotal">ยอดขายรวม: 0 บาท</div>
 <div class="total profit" id="profitTotal">กำไรรวม: 0 บาท</div>
 </div>
 
@@ -102,8 +148,8 @@ const profitData = [
     { sell: 15, cost: 6.27 },
     { sell: 8, cost: 7.2 },
     { sell: 12, cost: 6.1 },
-    { sell: 49, cost: 14 },
-    { sell: 49, cost: 10 }
+    { sell: 14, cost: 49 },
+    { sell: 10, cost: 49 }
 ];
 
 // ลบเลข 0 นำหน้า
@@ -119,7 +165,9 @@ function cleanZero(input) {
 function calculateSale() {
     let total = 0;
     salePrices.forEach((price, i) => {
-        total += (Number(document.getElementById(`s${i+1}`).value) || 0) * price;
+        const el = document.getElementById(`s${i+1}`);
+        if (!el) return;
+        total += (Number(el.value) || 0) * price;
     });
     document.getElementById("costTotal").innerText =
         `ราคารวม: ${total.toLocaleString()} บาท`;
@@ -129,13 +177,19 @@ function calculateSale() {
 function calculateProfit() {
     let total = 0;
     let saleTotal = 0;
+
     profitData.forEach((item, i) => {
-        const qty = Number(document.getElementById(`p${i+1}`).value) || 0;
-        total += (qty * item.sell) - (qty * item.cost);
+        const el = document.getElementById(`p${i+1}`);
+        if (!el) return;
+
+        const qty = Number(el.value) || 0;
         saleTotal += qty * item.sell;
+        total += (qty * item.sell) - (qty * item.cost);
     });
+
     document.getElementById("saleTotal").innerText =
         `ยอดขายรวม: ${saleTotal.toFixed(2)} บาท`;
+
     document.getElementById("profitTotal").innerText =
         `กำไรรวม: ${total.toFixed(2)} บาท`;
 }
